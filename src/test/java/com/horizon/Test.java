@@ -12,6 +12,9 @@ public class Test {
         configuration.getConfig().setValue("config.data", "test"); //This is used for setting the value.
         configuration.getConfig().setString("config.version", "1.0.1");
         configuration.getConfig().setInteger("config.identifier", 150546);
+        configuration.getConfig().setDouble("config.double", 2.0);
+        configuration.getConfig().setFloat("config.float", 2.0f);
+        configuration.getConfig().setLong("config.float", 2000L);
 
         System.out.println("Data -> " + configuration.getConfig().getString("config.data")); //With this we can print value at path is data on that path exists.
         System.out.println("Version -> " + configuration.getConfig().getString("config.version"));

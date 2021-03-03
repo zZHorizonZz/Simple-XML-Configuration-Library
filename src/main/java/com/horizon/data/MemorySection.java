@@ -160,6 +160,11 @@ public class MemorySection implements DataSection {
     }
 
     @Override
+    public Long getLong(String path) {
+        return Long.parseLong((String) getValue(path));
+    }
+
+    @Override
     public void setInteger(String path, Integer value) {
         setValue(path, String.valueOf(value));
     }
@@ -176,6 +181,11 @@ public class MemorySection implements DataSection {
 
     @Override
     public void setFloat(String path, Float value) {
+        setValue(path, String.valueOf(value));
+    }
+
+    @Override
+    public void setLong(String path, Long value) {
         setValue(path, String.valueOf(value));
     }
 

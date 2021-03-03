@@ -80,6 +80,8 @@ public interface DataSection {
 
     Float getFloat(String path);
 
+    Long getLong(String path);
+
     void setInteger(String path, Integer value);
 
     void setString(String path, String value);
@@ -87,4 +89,6 @@ public interface DataSection {
     void setDouble(String path, Double value);
 
     void setFloat(String path, Float value);
+
+    void setLong(String path, Long value);
 }
