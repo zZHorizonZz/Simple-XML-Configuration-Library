@@ -2,7 +2,7 @@ package com.horizon;
 
 public class Test {
 
-    private static String filePath = "C:\\Users\\danfi\\OneDrive\\Documents\\PersonalProjects\\Builds";
+    private static String filePath = null; //#INSERT FILE PATH#"
     private static String fileName = "data.xml";
 
     public static void main(String[] args) {
