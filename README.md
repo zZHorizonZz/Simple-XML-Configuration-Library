@@ -1,5 +1,5 @@
 # Simple XML Configuration
- Basic xml config management library. It can simply save value with a path in the format 'data.info'.
+ Basic xml config management library. You can simply save value with a path in the format 'data.info'.
 
 ## Download
 You can download [Release Here](https://github.com/zMamutCZz/Simple-XML-Library/releases/tag/1.0)
