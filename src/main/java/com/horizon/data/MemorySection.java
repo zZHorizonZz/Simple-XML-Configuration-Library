@@ -1,12 +1,14 @@
 package com.horizon.data;
 
+import com.horizon.common.UtilXML;
 import com.horizon.other.DataSection;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,39 +19,84 @@ import java.util.Map;
 public class MemorySection implements DataSection {
 
     private File file;
+    private Document xmlDocument;
     protected final Map<String, Object> dataMap = new LinkedHashMap<>();
 
     @Override
-    public void initialize(File file) {
+    public void initialize(File file, boolean newFile) {
         try {
             if (file == null || !file.exists())
                 throw new FileNotFoundException("File can not be null!");
 
             this.file = file;
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = UtilXML.createDocumentBuilderFactory(false, false).newDocumentBuilder();
 
-            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            documentBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            documentBuilderFactory.setXIncludeAware(false);
-            documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            documentBuilderFactory.setExpandEntityReferences(false);
+            if (newFile) {
+                this.xmlDocument = documentBuilder.newDocument();
+                this.xmlDocument.appendChild(this.xmlDocument.createElement("data"));
+            } else {
+                this.xmlDocument = documentBuilder.parse(this.file);
+                this.xmlDocument.getDocumentElement().normalize();
+            }
 
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(this.file);
-
-            document.getDocumentElement().normalize();
-
-            Element documentElement = document.getDocumentElement();
-            String currentPath = documentElement.getNodeName();
-            loadElement(currentPath, documentElement.getChildNodes());
-        } catch (ParserConfigurationException | SAXException | IOException exception) {
+            if (xmlDocument.getDocumentElement() != null) {
+                Element documentElement = this.xmlDocument.getDocumentElement();
+                String currentPath = documentElement.getNodeName();
+                loadElement(currentPath, documentElement.getChildNodes());
+            }
+        } catch (ParserConfigurationException | IOException | SAXException exception) {
             exception.printStackTrace();
         }
     }
 
     @Override
-    public void save() {
+    public void save(boolean reformat) {
+        for (Map.Entry<String, Object> dataEntry : dataMap.entrySet()) {
+            String path = dataEntry.getKey();
+            Object dataValue = dataEntry.getValue();
+
+            if (dataValue instanceof String)
+                saveElement(path, (String) dataValue);
+        }
+
+        UtilXML.transformDocument(this.xmlDocument, this.file, reformat);
+    }
+
+    @Override
+    public void saveElement(String objectPath, String value) {
+        String[] pathElements = objectPath.split("\\.");
+        int pathIndex = 0;
+        Node currentNode = xmlDocument.getDocumentElement();
+
+        if(!currentNode.getNodeName().equalsIgnoreCase(pathElements[0]))
+            this.xmlDocument.renameNode(currentNode, null, pathElements[0]);
+
+        masterLoop:
+        for (String path : pathElements) {
+            pathIndex++;
+            if (pathIndex == 1)
+                continue;
+
+            if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                for (int index = 0; index < currentNode.getChildNodes().getLength(); index++) {
+                    Node childNode = currentNode.getChildNodes().item(index);
+                    if (childNode.getNodeName().equalsIgnoreCase(path)) {
+                        currentNode = childNode;
+                        continue masterLoop;
+                    }
+                }
+
+                Element element = this.xmlDocument.createElement(path);
+                currentNode.appendChild(element);
+                currentNode = element;
+            }
+        }
+
+        if (currentNode.getFirstChild() != null) {
+            currentNode.getFirstChild().setNodeValue(value);
+        } else {
+            currentNode.appendChild(this.xmlDocument.createTextNode(value));
+        }
 
     }
 
@@ -59,13 +106,15 @@ public class MemorySection implements DataSection {
 
             Node node = nodeList.item(index);
             String nodePathBuilder = currentPath + "." + node.getNodeName();
+
             if (node.getNodeType() == Node.ELEMENT_NODE)
                 if (node.hasChildNodes())
                     loadElement(nodePathBuilder, node.getChildNodes());
 
-            if (node.getNodeType() == Node.TEXT_NODE)
-                setValue(nodePathBuilder, node.getNodeValue());
-
+            if (node.getNodeType() == Node.TEXT_NODE) {
+                if (node.getNodeValue() != null && nodeList.getLength() == 1)
+                    setValue(currentPath, node.getNodeValue());
+            }
         }
     }
 
@@ -112,22 +161,22 @@ public class MemorySection implements DataSection {
 
     @Override
     public void setInteger(String path, Integer value) {
-
+        setValue(path, String.valueOf(value));
     }
 
     @Override
     public void setString(String path, String value) {
-
+        setValue(path, value);
     }
 
     @Override
     public void setDouble(String path, Double value) {
-
+        setValue(path, String.valueOf(value));
     }
 
     @Override
     public void setFloat(String path, Float value) {
-
+        setValue(path, String.valueOf(value));
     }
 
     public File getFile() {
