@@ -17,7 +17,7 @@ import java.io.File;
  * @author Horizon
  * @version 1.0
  */
-public class UtilXML {
+public class UtilXml {
 
     public static void transformDocument(Document document, File file, boolean refactor) {
         try {

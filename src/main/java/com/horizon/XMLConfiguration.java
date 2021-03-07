@@ -4,6 +4,7 @@ import com.horizon.data.MemorySection;
 import com.horizon.other.Configuration;
 
 import java.io.File;
+import java.nio.file.FileSystemNotFoundException;
 
 public class XMLConfiguration implements Configuration {
 
@@ -53,7 +54,7 @@ public class XMLConfiguration implements Configuration {
                 if (xmlFile.createNewFile()) {
                     this.configurationFile = xmlFile;
                 } else {
-                    throw new Exception("Something went wrong with creation of xml file!");
+                    throw new FileSystemNotFoundException("Something went wrong with creation of xml file!");
                 }
             } else {
                 this.configurationFile = xmlFile;

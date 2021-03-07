@@ -1,6 +1,6 @@
 package com.horizon.data;
 
-import com.horizon.common.UtilXML;
+import com.horizon.common.UtilXml;
 import com.horizon.other.DataSection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MemorySection implements DataSection {
 
@@ -29,7 +30,7 @@ public class MemorySection implements DataSection {
                 throw new FileNotFoundException("File can not be null!");
 
             this.file = file;
-            DocumentBuilder documentBuilder = UtilXML.createDocumentBuilderFactory(false, false).newDocumentBuilder();
+            DocumentBuilder documentBuilder = UtilXml.createDocumentBuilderFactory(false, false).newDocumentBuilder();
 
             if (newFile) {
                 this.xmlDocument = documentBuilder.newDocument();
@@ -59,7 +60,7 @@ public class MemorySection implements DataSection {
                 saveElement(path, (String) dataValue);
         }
 
-        UtilXML.transformDocument(this.xmlDocument, this.file, reformat);
+        UtilXml.transformDocument(this.xmlDocument, this.file, reformat);
     }
 
     @Override
@@ -107,28 +108,17 @@ public class MemorySection implements DataSection {
             Node node = nodeList.item(index);
             String nodePathBuilder = currentPath + "." + node.getNodeName();
 
-            if (node.getNodeType() == Node.ELEMENT_NODE)
-                if (node.hasChildNodes())
-                    loadElement(nodePathBuilder, node.getChildNodes());
+            if (node.getNodeType() == Node.ELEMENT_NODE && node.hasChildNodes())
+                loadElement(nodePathBuilder, node.getChildNodes());
 
-            if (node.getNodeType() == Node.TEXT_NODE) {
-                if (node.getNodeValue() != null && nodeList.getLength() == 1)
-                    setValue(currentPath, node.getNodeValue());
-            }
+            if (node.getNodeType() == Node.TEXT_NODE && node.getNodeValue() != null && nodeList.getLength() == 1)
+                setValue(currentPath, node.getNodeValue());
         }
     }
 
     @Override
     public Object getValue(String path) {
-        try {
-            if (!dataMap.containsKey(path))
-                throw new NullPointerException("This configuration does not contains value with this path!");
-
-            return dataMap.get(path);
-        } catch (NullPointerException exception) {
-            exception.printStackTrace();
-            return null;
-        }
+        return Objects.requireNonNull(dataMap.get(path));
     }
 
     @Override
