@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.zmamutczz</groupId>
-    <artifactId>XMLSimpleConfiguration</artifactId>
+    <artifactId>simple-xml-configuration-library</artifactId>
     <version>1.0</version>
 
-    <name>XML-Simple-Configuration</name>
+    <name>Simple-XML-Configuration-Library</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

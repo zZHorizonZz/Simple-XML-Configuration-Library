@@ -1,7 +1,7 @@
 [![Lincese](https://img.shields.io/aur/license/LICENSE?style=for-the-badge)](https://github.com/zMamutCZz/Simple-XML-Library/blob/main/LICENSE)
 [![Latest Release](https://img.shields.io/github/v/release/zMamutCZz/Simple-XML-Library?color=green&style=for-the-badge)](https://github.com/zMamutCZz/Simple-XML-Library/releases) [![Latest Update](https://img.shields.io/github/last-commit/zMamutCZz/Simple-XML-Library?color=orange&style=for-the-badge)](https://github.com/zMamutCZz/Simple-XML-Library/releases)
 
-# Simple XML Configuration
+# Simple XML Configuration Library
  Basic xml config management library. You can simply save value with a path in the format 'data.info'.
 
 ## Download
